@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
+import util.Conexao;
 import util.Relogio;
 
 import javax.swing.JButton;
@@ -20,6 +21,7 @@ public class Tela {
 	private JFrame frame;
 	private JTextField hr, min, seg, drift;
 	private Relogio rel;
+	private Conexao con;
 
 	/**
 	 * Launch the application.
@@ -128,6 +130,11 @@ public class Tela {
 		btnSetSegundo.addActionListener(btmH);
 		btnSetSegundo.setBounds(377, 133, 89, 23);
 		frame.getContentPane().add(btnSetSegundo);
+		
+		JButton btnConectar = new JButton("Conectar");
+		btnConectar.addActionListener(btmH);
+		btnConectar.setBounds(198, 227, 89, 23);
+		frame.getContentPane().add(btnConectar);
 	}
 
 	private class ButtonHandller implements ActionListener {
@@ -169,6 +176,17 @@ public class Tela {
 					int aux = Integer.parseInt(seg.getText());
 					rel.setSeg(aux);
 					rel.refresh();
+				}
+			}else if ("Conectar".equals(e.getActionCommand())) {
+				String ip = JOptionPane.showInputDialog("Informe o IP do grupo", "");
+				System.out.println("IP do grupo - "+ ip);
+				try {
+					con = new Conexao(ip);
+					con.start();
+					con.enviar("Teste de envio");
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					System.out.println("Erro no envio");
 				}
 			}
 
