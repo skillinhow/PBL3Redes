@@ -27,7 +27,7 @@ public class Relogio extends Thread {
 				Thread.sleep(millis);
 				rel = hora+":"+min+":"+seg;
 				lbl.setText(rel);
-				System.out.println("Drift na contagem - "+ millis);
+//				System.out.println("Drift na contagem - "+ millis);
 				if (seg > 60) {
 					min += 1;
 					seg = 0;

@@ -13,6 +13,9 @@ import util.Relogio;
 import javax.swing.JButton;
 import java.awt.Font;
 import javax.swing.SwingConstants;
+
+import controller.Controller;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
@@ -22,6 +25,7 @@ public class Tela {
 	private JTextField hr, min, seg, drift;
 	private Relogio rel;
 	private Conexao con;
+	private Controller control;
 
 	/**
 	 * Launch the application.
@@ -50,6 +54,8 @@ public class Tela {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
+		
 
 		frame = new JFrame();
 		frame.setBounds(100, 100, 489, 300);
@@ -60,8 +66,8 @@ public class Tela {
 		relogio.setHorizontalAlignment(SwingConstants.CENTER);
 		relogio.setFont(new Font("Tahoma", Font.PLAIN, 62));
 		relogio.setBounds(67, 24, 366, 75);
-		rel = new Relogio(relogio);
 		frame.getContentPane().add(relogio);
+		control = new Controller(relogio);
 
 		hr = new JTextField();
 		hr.setBounds(53, 110, 89, 20);
@@ -142,31 +148,29 @@ public class Tela {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if ("Start".equals(e.getActionCommand())) {
-				rel.start();
+				control.start();
 			} else if ("Stop".equals(e.getActionCommand())) {
-				
+				control.stop();
 			} else if ("Set Drift".equals(e.getActionCommand())) {
 				if ("".equals(drift.getText())) {
 					JOptionPane.showMessageDialog(null, "Insira um valor de Drift!!");
 				} else {
 					long aux = Long.parseLong(drift.getText());
-					rel.setMillis(aux);					
+					control.setDrift(aux);				
 				}
 			} else if ("Set Hora".equals(e.getActionCommand())) {
 				if ("".equals(hr.getText())){
 					JOptionPane.showMessageDialog(null, "Insira um valor da Hora!!");
 				} else {
 					int aux = Integer.parseInt(hr.getText());
-					rel.setHora(aux);
-					rel.refresh();
+					control.setHr(aux);
 				}
 			} else if ("Set Min".equals(e.getActionCommand())) {
 				if ("".equals(min.getText())) {
 					JOptionPane.showMessageDialog(null, "Insira um valor de Minutos!!");
 				} else {
 					int aux = Integer.parseInt(min.getText());
-					rel.setMin(aux);
-					rel.refresh();
+					control.setMin(aux);
 				}
 
 			} else if ("Set Seg".equals(e.getActionCommand())) {
@@ -174,16 +178,13 @@ public class Tela {
 					JOptionPane.showMessageDialog(null, "Insira um valor de Segundos!!");
 				} else {
 					int aux = Integer.parseInt(seg.getText());
-					rel.setSeg(aux);
-					rel.refresh();
+					control.setSeg(aux);
 				}
 			}else if ("Conectar".equals(e.getActionCommand())) {
 				String ip = JOptionPane.showInputDialog("Informe o IP do grupo", "");
 				System.out.println("IP do grupo - "+ ip);
 				try {
-					con = new Conexao(ip);
-					con.start();
-					con.enviar("Teste de envio");
+					control.conectar(ip);
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					System.out.println("Erro no envio");
