@@ -75,5 +75,9 @@ public class Controller {
 		rel.setHora(aux);
 		rel.refresh();
 	}
+	
+	public void deuRuin(){
+		
+	}
 
 }
