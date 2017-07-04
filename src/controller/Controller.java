@@ -76,5 +76,8 @@ public class Controller {
 		rel.refresh();
 	}
 	
+	public void deuRuin(){
+		
+	}
 
 }
