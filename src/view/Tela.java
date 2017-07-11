@@ -58,7 +58,7 @@ public class Tela {
 		
 
 		frame = new JFrame();
-		frame.setBounds(100, 100, 489, 300);
+		frame.setBounds(100, 100, 489, 253);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -88,13 +88,8 @@ public class Tela {
 
 		JButton btnStart = new JButton("Start");
 		btnStart.addActionListener(btmH);
-		btnStart.setBounds(53, 227, 89, 23);
+		btnStart.setBounds(267, 183, 89, 23);
 		frame.getContentPane().add(btnStart);
-
-		JButton btnStop = new JButton("Stop");
-		btnStop.addActionListener(btmH);
-		btnStop.setBounds(344, 227, 89, 23);
-		frame.getContentPane().add(btnStop);
 
 		JLabel lblHora = new JLabel("Hora - ");
 		lblHora.setBounds(10, 113, 46, 14);
@@ -109,17 +104,17 @@ public class Tela {
 		frame.getContentPane().add(lblSegundo);
 
 		drift = new JTextField();
-		drift.setBounds(175, 184, 86, 20);
+		drift.setBounds(53, 184, 86, 20);
 		frame.getContentPane().add(drift);
 		drift.setColumns(10);
 
 		JLabel lblDtift = new JLabel("Dtift -");
-		lblDtift.setBounds(96, 187, 46, 14);
+		lblDtift.setBounds(10, 187, 46, 14);
 		frame.getContentPane().add(lblDtift);
 
 		JButton btnSetDrift = new JButton("Set Drift");
 		btnSetDrift.addActionListener(btmH);
-		btnSetDrift.setBounds(293, 178, 89, 23);
+		btnSetDrift.setBounds(152, 183, 89, 23);
 		frame.getContentPane().add(btnSetDrift);
 
 		JButton btnSetHora = new JButton("Set Hora");
@@ -139,7 +134,7 @@ public class Tela {
 		
 		JButton btnConectar = new JButton("Conectar");
 		btnConectar.addActionListener(btmH);
-		btnConectar.setBounds(198, 227, 89, 23);
+		btnConectar.setBounds(377, 183, 89, 23);
 		frame.getContentPane().add(btnConectar);
 	}
 
@@ -149,13 +144,11 @@ public class Tela {
 		public void actionPerformed(ActionEvent e) {
 			if ("Start".equals(e.getActionCommand())) {
 				control.start();
-			} else if ("Stop".equals(e.getActionCommand())) {
-				control.stop();
 			} else if ("Set Drift".equals(e.getActionCommand())) {
 				if ("".equals(drift.getText())) {
 					JOptionPane.showMessageDialog(null, "Insira um valor de Drift!!");
 				} else {
-					long aux = Long.parseLong(drift.getText());
+					long aux = Integer.parseInt(drift.getText())*1000;
 					control.setDrift(aux);				
 				}
 			} else if ("Set Hora".equals(e.getActionCommand())) {
@@ -181,10 +174,8 @@ public class Tela {
 					control.setSeg(aux);
 				}
 			}else if ("Conectar".equals(e.getActionCommand())) {
-				String ip = JOptionPane.showInputDialog("Informe o IP do grupo", "");
-				System.out.println("IP do grupo - "+ ip);
 				try {
-					control.conectar(ip);
+					control.conectar();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					System.out.println("Erro no envio");

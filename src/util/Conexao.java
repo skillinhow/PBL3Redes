@@ -14,24 +14,25 @@ import java.util.Random;
 public class Conexao extends Thread {
 
 	private MulticastSocket ms;
-	private ConexaoDt ds;
 	private int porta;
 	private String grupo;
 	private int id;
-	private ArrayList<String> lista;
+	private volatile boolean coord;
+	private Relogio rel;
+	private Referencia ref;
 
-	public Conexao(String grupo) {
-		this.grupo = grupo;
+	public Conexao(Relogio relo) {
+		this.grupo = "230.0.0.1";
 		porta = 5000;
-		lista = new ArrayList<>();
+		rel = relo;
+		coord = false;
 		try {
 			ms = new MulticastSocket(porta);
 			ms.joinGroup(InetAddress.getByName(grupo));
-			ms.setTimeToLive(1);
+			ms.setTimeToLive(10);
+			System.out.println("Multicast com grupo - "+ InetAddress.getByName(grupo) +" e porta - "+ porta);
+			id = geraID();
 			System.out.println("Grupo criado com sucesso!!");
-			ds = new ConexaoDt();
-			ds.start();
-			System.out.println("Datagram criado com porta - " + ds.getPorta());
 		} catch (IOException e) {
 			System.out.println("Falha na criação do grupo Multicast");
 		}
@@ -43,61 +44,25 @@ public class Conexao extends Thread {
 		buf = mensagem.getBytes();
 		DatagramPacket pack = new DatagramPacket(buf, buf.length, InetAddress.getByName(grupo), porta);
 		ms.send(pack);
-		System.out.println("Pacote tecnicamente enviado");
 	}
-	
-//	public int setaID(int id){
-//		this.id = id;
-//		InetAddress e;
-//		try {
-//			e = InetAddress.getLocalHost();
-//			String eu = id + "@" + e.getHostAddress().toString() + "@" + ds.getPorta();
-//			System.out.println(eu);
-//			lista.add(eu);
-//		} catch (UnknownHostException e1) {
-//			// TODO Auto-generated catch block
-//			System.out.println("Erro em gerar o ip local");
-//		}
-//		return id;
-//	}
 
 	public int geraID() {
 		SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
-		System.out.println(sdf.format(new Date()));
 		String[] u = (sdf.format(new Date())).split(":");
 		int ID = (Integer.parseInt(u[0]) + Integer.parseInt(u[1]) + Integer.parseInt(u[2]))
 				* new Random().nextInt(100000);
 		System.out.println("ID - " + ID);
 		id = ID;
-
-		InetAddress e;
-		try {
-			e = InetAddress.getLocalHost();
-			String eu = id + "@" + e.getHostAddress().toString() + "@" + ds.getPorta();
-			System.out.println(eu);
-			lista.add(eu);
-		} catch (UnknownHostException e1) {
-			// TODO Auto-generated catch block
-			System.out.println("Erro em gerar o ip local");
-		}
 		return ID;
 	}
-	
-	public ConexaoDt getDt(){
-		return ds;
-	}
-	
-	public ArrayList<String> getLista(){
-		return lista;
-	}
-	
-	public int getID(){
+
+	public int getID() {
 		return id;
 	}
 
-//	public int getPortaUDP() {
-//		return ds.getPorta();
-//	}
+	// public int getPortaUDP() {
+	// return ds.getPorta();
+	// }
 
 	@Override
 	public void run() {
@@ -111,48 +76,65 @@ public class Conexao extends Thread {
 
 				String[] y = x.trim().split("@");
 
-				System.out.println("Ouvi alguem chamando!!");
-				if (y[0].equals("ARPR") && !y[1].equals(id + "")) {
-					String ele = y[1] + "@" + pack.getAddress().toString().substring(1) + "@" + y[2];
-					System.out.println("ELE - " + ele);
-					int cont = 0;
-					for (String string : lista) {
-						String[] aux = string.split("@");
-						if (y[1].equals(aux[0])) {
-							cont++;
-						}
+				if (y[0].equals("ARP")) {
+					System.out.println("Estado do coord - " + coord);
+					if (coord) {
+						System.out.println("Eu to aqui e sou a referência");
+						enviar("EU@" + id + "@COORD");
+					} else {
+						System.out.println("Eu to aqi !!");
+						enviar(("EU@" + id));
 					}
-					if (cont == 0) {
-						lista.add(ele);
+				} else if (y[0].equals("EU")) {
+					if (id != Integer.parseInt(y[1])) {
+						System.out.println("Manda teu tempo ai namoral - ID - " + y[1]
+								+ " Pra eu acertar meu relogio - ID - " + id);
+						String msg = "ST@" + y[1] + "@" + id;
+						enviar(msg);
+					} else {
+						System.out.println("Ouvi um eco");
 					}
-					System.out.println("Ele ja ta na lista");
-					System.out.println("Eu to aqui tmb");
-					enviar("ARPS@" + id + "@" + ds.getPorta());
-				} else if (y[0].equals("ARPS") && !y[1].equals(id + "")) {
-					String ele = y[1] + "@" + pack.getAddress().toString().substring(1) + "@" + y[2];
-					System.out.println("ELE - " + ele);
-					int cont = 0;
-					for (String string : lista) {
-						String[] aux = string.split("@");
-						if (y[1].equals(aux[0])) {
-							cont++;
-						}
+
+				} else if (y[0].equals("ST") && Integer.parseInt(y[1]) == id) {
+					String i = rel.getHora();
+					System.out.println("Mando sim brother - ID - " + id + " Minha hora é essa: " + i
+							+ " Ouviu pivas - ID - " + y[2]);
+					String msg = "MT@" + i + "@" + y[2] + "@" + y[1];
+					enviar(msg);
+				} else if (y[0].equals("MT") && Integer.parseInt(y[2]) == id) {
+					String[] aux = y[1].split(":");
+					System.out.println("To comparando essa hora - " + y[1]);
+					int resp = rel.compareTo(y[1]);
+					System.out.println("Resposta da comparação - " + resp);
+					if (resp == -1) {
+						rel.setHora(Integer.parseInt(aux[0]));
+						rel.setMin(Integer.parseInt(aux[1]));
+						rel.setSeg(Integer.parseInt(aux[2]));
+						rel.refresh();
+						enviar("COORD@" + y[3]);						
+						ref = new Referencia(rel);
+						ref.start();
+						rel.run();
+						System.out.println("Vlw man o/");
+					} else if (resp == 0) {
+						System.out.println("Minha hora tava certa, mas vlw man o/");
+					} else if (resp == 1) {
+						System.out.println("Tua hora ta errada man t.t");
 					}
-					if (cont == 0) {
-						lista.add(ele);
-					}
-					System.out.println("Ele ja ta na lista");
-					System.out.println("Eu to aqui tmb");
+				} else if (y[0].equals("COORD")) {
+					System.out.println("Virei Coordenador");
+					coord = true;
+					ref = new Referencia(rel);
+//					ref.enviar("Teste");
+					ref.atualizarRel(coord);
+				} else if (y[0].equals("EU") && y[2].equals("COORD")) {
+					System.out.println("É tu quem manda aqui é? - ID -" + y[1]);
+					ref = new Referencia(rel);
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				System.out.println("Erro na escuta");
-			}
-
-			System.out.println("Lista de relogios");
-			for (String string : lista) {
-				System.out.println(string);
 			}
 
 		}
