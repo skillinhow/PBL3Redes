@@ -27,29 +27,31 @@ public class Relogio extends Thread implements Comparable<String> {
 				Thread.sleep(millis);
 				rel = hora + ":" + min + ":" + seg;
 				lbl.setText(rel);
-				
+
 				if (seg > 59) {
-                                        seg = 0;
-					min += 1;					
+					seg = 0;
+					min += 1;
 					rel = hora + ":" + min + ":" + seg;
 					lbl.setText(rel);
-                                        if(min > 59){
-                                        hora += 1;
+				} else if (min > 59) {
+					hora += 1;
 					min = 0;
 					rel = hora + ":" + min + ":" + seg;
 					lbl.setText(rel);
-                                        if(hora>23)
-                                            hora = 0;
+				} else if (hora > 23) {
+					hora = 0;
+					min = 0;
 					rel = hora + ":" + min + ":" + seg;
 					lbl.setText(rel);
-                                        }
-                                        
-				} 
+				}
 
-			} catch (InterruptedException e) {
+			} catch (
+
+			InterruptedException e) {
 				System.out.println("Erro no delay do contador");
 			}
 		}
+
 	}
 
 	public void setHora(int hora) {
