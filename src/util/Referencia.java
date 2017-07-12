@@ -1,6 +1,7 @@
 package util;
 
 import java.io.IOException;
+import static java.lang.Thread.sleep;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
@@ -14,14 +15,18 @@ public class Referencia extends Thread {
 
 	public Referencia(Relogio relo) {
 		this.rel = relo;
-		grupo = "230.0.0.136";
-		porta = 6001;
+<<<<<<< HEAD
+		grupo = "230.0.0.1";
+		porta = 20141;
+=======
+		grupo = "230.0.0.11";
+		porta = 20142;
+>>>>>>> 095e63bcc36b2263398c737fefd7043f9349c90a
 		try {
 			rf = new MulticastSocket(porta);
 			rf.joinGroup(InetAddress.getByName(grupo));
 			System.out.println("Grupo de atualização criado com sucesso!!");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException e) {			
 			e.printStackTrace();
 		}
 	}
@@ -35,25 +40,29 @@ public class Referencia extends Thread {
 	}
 
 	public void atualizarRel(boolean coord) {
-		System.out.println("Entoru no método de atuaçização com coord - " + coord);
-		while (coord) {
-			System.out.println("Mandando atualização");
+		System.out.println("Entrou no método de atualização com coord - " + coord);
+                
+		if (coord == true) {
+			//System.out.println("Mandando atualização");
 			String msg = "HC@" + rel.getHora();
 			try {
-				enviar(msg);
-				sleep(250);
-				System.out.println(msg);
+				enviar(msg);                               
+				sleep(250);                                
+				//System.out.println(msg); 
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 				System.out.println("Erro no envio da atualização da hora");
 			}
+                       
 		}
 	}
+	
+
 
 	@Override
 	public void run() {
-		System.out.println("Escuta de atualização de horario pronta!!");
+		
 		while (true) {
 			try {
 				byte buff[] = new byte[1024];
@@ -68,7 +77,7 @@ public class Referencia extends Thread {
 					String[] aux = y[1].split(":");
 					System.out.println("To comparando essa hora - " + y[1]);
 					int resp = rel.compareTo(y[1]);
-					System.out.println("Resposta da comparação - " + resp);
+					
 					if (resp == -1) {
 						rel.setHora(Integer.parseInt(aux[0]));
 						rel.setMin(Integer.parseInt(aux[1]));
@@ -80,7 +89,7 @@ public class Referencia extends Thread {
 					} else if (resp == 1) {
 						System.out.println("Tua hora ta errada man t.t");
 					}
-				}else if (y[0].equals("ARP")) {
+				} else if (y[0].equals("ARP")) {
 					System.out.println("Ta travando assim");
 				}
 
@@ -88,7 +97,9 @@ public class Referencia extends Thread {
 				// TODO Auto-generated catch block
 				System.out.println("Erro na escuta da Referência");
 			}
+                         
 		}
 	}
 
 }
+

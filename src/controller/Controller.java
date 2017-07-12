@@ -10,16 +10,27 @@ public class Controller {
 	private Relogio rel;
 	private Conexao con;
 
-
 	public Controller(JLabel label) {
 		rel = new Relogio(label);
+		con = new Conexao(rel);
 	}
 
 	public void conectar() throws Exception {
-		con = new Conexao(rel);
-		con.start();
+		if (!con.isAlive()) {
+			System.err.println("taquisapoha");
+			
+			con.start();
+		}
+		
 		System.out.println("Quem ta ai?");
 		con.enviar("ARP@");
+		// con.temGente();
+
+
+		con = new Conexao(rel);
+		con.start();                
+		//System.err.println("Quem ta ai?");
+		con.enviar("ARP@");                
 	}
 
 	public void start() {
@@ -44,9 +55,5 @@ public class Controller {
 		rel.setHora(aux);
 		rel.refresh();
 	}
-	
-	public void deuRuin(){
-		
-	}
-
 }
+
