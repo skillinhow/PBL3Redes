@@ -10,15 +10,18 @@ public class Controller {
 	private Relogio rel;
 	private Conexao con;
 
-	public Controller(JLabel label) {
+	public Controller(JLabel label, JLabel la) {
 		rel = new Relogio(label);
+		con = new Conexao(rel, la);
 	}
 
 	public void conectar() throws Exception {
-		con = new Conexao(rel);
-		con.start();                
-		//System.err.println("Quem ta ai?");
-		con.enviar("ARP@");                
+		
+		if(!con.isAlive()){
+			
+			con.start();                			
+			con.enviar("ARP@");  
+		}
 	}
 
 	public void start() {

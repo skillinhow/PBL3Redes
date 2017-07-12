@@ -8,6 +8,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
+import javax.swing.JLabel;
+
 public class Conexao extends Thread {
 
     private MulticastSocket ms;
@@ -18,17 +20,21 @@ public class Conexao extends Thread {
     private volatile static int idCoord;
     private Relogio rel;
     private Referencia ref;
+    private JLabel lbl;
+    private ThreadEscutaAtualizacao th;
 
-    public Conexao(Relogio relo) {
+    public Conexao(Relogio relo, JLabel l) {
         this.grupo = "230.0.0.10";
         porta = 20141;
         rel = relo;
         coord = false;
+        lbl = l;
         try {
             ms = new MulticastSocket(porta);
             ms.joinGroup(InetAddress.getByName(grupo));           
             System.out.println("Multicast com grupo - " + InetAddress.getByName(grupo) + " e porta - " + porta);
             id = geraID();            
+            th = new ThreadEscutaAtualizacao(rel);
         } catch (IOException e) {
             System.out.println("Falha na criação do grupo Multicast");
         }
@@ -55,10 +61,13 @@ public class Conexao extends Thread {
     public int getID() {
         return id;
     }
+    
+    
 
     @Override
     public void run() {
         while (true) {
+        	
             try {
                 byte buf[] = new byte[1024];
                 DatagramPacket pack = new DatagramPacket(buf, buf.length);
@@ -70,10 +79,13 @@ public class Conexao extends Thread {
 
                 if (y[0].equals("ARP")) {
                     System.out.println("Estado do coord - " + coord);
-                    if (coord == true) {
+                    if (coord == true && idCoord == id) {
                         System.out.println("Eu to aqui e sou a referência");
-                        enviar("EU@" + id + "@COORD");
-                    } else {
+                        enviar("EUC@" + id );
+                    } else if(coord == true && idCoord != id){
+                    	enviar("EUR@" + id + "@" + idCoord);
+                    	
+                    }else {
                         System.out.println("Eu to aqi !!");
                         enviar(("EU@" + id));
                     }
@@ -110,9 +122,10 @@ public class Conexao extends Thread {
                         rel.setSeg(Integer.parseInt(aux[2]));
                         rel.refresh();
                         enviar("COORD@" + y[3]);
-                        ref = new Referencia(rel);
-                        ref.start();
-                        rel.run();
+                        coord = true;
+                        idCoord=Integer.parseInt(y[3]);
+                        th.start();                      
+                        rel.start();
                         System.out.println("Vlw man o/");
                     } else if (resp == 0) {
                         System.out.println("Minha hora tava certa, mas vlw man o/");
@@ -124,10 +137,21 @@ public class Conexao extends Thread {
                 else if (y[0].equals("COORD")) {
                     System.out.println("Virei Coordenador");
                     coord = true;
-                    ref = new Referencia(rel);
-                    // ref.enviar("Teste");
-                    ref.atualizarRel(coord);
-                } 
+                    idCoord = id;
+                    
+                    ref = new Referencia(rel, coord);                   
+                    ref.start();
+                } else if(y[0].equals("EUR")){
+                	coord = true;
+                	idCoord = Integer.parseInt(y[2]);
+                	th.start();
+                	
+                }else if(y[0].equals("EUC")){
+                	coord = true;
+                	idCoord = Integer.parseInt(y[1]);
+                	th.start();
+                	
+                }
                 
                 
             } catch (Exception e) {
@@ -135,8 +159,10 @@ public class Conexao extends Thread {
                 e.printStackTrace();
                 System.out.println("Erro na escuta");
             }
-
-            System.err.println("Rapaz cabô a thread");
+            
+        	
+        	
+        	System.err.println("Rapaz cabô a thread");
         }
     }
 
