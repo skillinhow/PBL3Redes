@@ -34,6 +34,7 @@ public class Relogio extends Thread implements Comparable<String> {
 					rel = hora + ":" + min + ":" + seg;
 					lbl.setText(rel);
 <<<<<<< HEAD
+<<<<<<< HEAD
 				}
 				if (min > 59) {
 					hora += 1;
@@ -54,6 +55,17 @@ public class Relogio extends Thread implements Comparable<String> {
 >>>>>>> 095e63bcc36b2263398c737fefd7043f9349c90a
 					rel = hora + ":" + min + ":" + seg;
 					lbl.setText(rel);
+=======
+                                        if(min > 59){
+                                        hora += 1;
+					min = 0;
+					rel = hora + ":" + min + ":" + seg;
+					lbl.setText(rel);
+                                        if(hora>23)
+                                            hora = 0;
+					rel = hora + ":" + min + ":" + seg;
+					lbl.setText(rel);
+>>>>>>> 5592ecd153ec69017de20e75dcae93950bcef06e
                                         }
                                         
 				} 
@@ -165,7 +177,7 @@ public class Relogio extends Thread implements Comparable<String> {
 			return -1;
 		}
 
-		// Caso a hora passada por argumento seja igual a minha
+		// Caso a hora passada por argumento seja igual a minha.
 		if (Integer.parseInt(aux[0]) == hora && Integer.parseInt(aux[1]) == min && Integer.parseInt(aux[2]) == seg) {
 			return 0;
 		}

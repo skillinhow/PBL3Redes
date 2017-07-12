@@ -20,6 +20,7 @@ public class Conexao extends Thread {
     private Referencia ref;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public Conexao(Relogio relo) {
 		this.grupo = "230.0.0.0";
 		porta = 50000;
@@ -37,6 +38,8 @@ public class Conexao extends Thread {
 		}
 	}
 =======
+=======
+>>>>>>> 5592ecd153ec69017de20e75dcae93950bcef06e
     public Conexao(Relogio relo) {
         this.grupo = "230.0.0.10";
         porta = 20141;
@@ -51,7 +54,10 @@ public class Conexao extends Thread {
             System.out.println("Falha na criação do grupo Multicast");
         }
     }
+<<<<<<< HEAD
 >>>>>>> 095e63bcc36b2263398c737fefd7043f9349c90a
+=======
+>>>>>>> 5592ecd153ec69017de20e75dcae93950bcef06e
 
     public void enviar(String mensagem) throws Exception {
 
@@ -75,6 +81,7 @@ public class Conexao extends Thread {
         return id;
     }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	public String escuta(){
 		byte buf[] = new byte[1024];
@@ -110,6 +117,19 @@ public class Conexao extends Thread {
 
                 String[] y = x.trim().split("@");
 >>>>>>> 095e63bcc36b2263398c737fefd7043f9349c90a
+=======
+    @Override
+    public void run() {
+        while (true) {
+            try {
+                byte buf[] = new byte[1024];
+                DatagramPacket pack = new DatagramPacket(buf, buf.length);
+                ms.receive(pack);
+                String x = new String(pack.getData());
+                System.out.println("Recebi de " + pack.getAddress() + ":" + pack.getPort() + " esta mensagem -" + x);
+
+                String[] y = x.trim().split("@");
+>>>>>>> 5592ecd153ec69017de20e75dcae93950bcef06e
 
                 if (y[0].equals("ARP")) {
                     System.out.println("Estado do coord - " + coord);
@@ -133,6 +153,7 @@ public class Conexao extends Thread {
                     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 				if (y[0].equals("ARP")) {
 					System.out.println("Estado do coord - " + coord);
 					if (coord == true) {
@@ -152,6 +173,8 @@ public class Conexao extends Thread {
 						System.out.println("Ouvi um eco");
 					}
 =======
+=======
+>>>>>>> 5592ecd153ec69017de20e75dcae93950bcef06e
                 } 
                 
                 else if (y[0].equals("ST") && Integer.parseInt(y[1]) == id) {
@@ -198,7 +221,10 @@ public class Conexao extends Thread {
                 e.printStackTrace();
                 System.out.println("Erro na escuta");
             }
+<<<<<<< HEAD
 >>>>>>> 095e63bcc36b2263398c737fefd7043f9349c90a
+=======
+>>>>>>> 5592ecd153ec69017de20e75dcae93950bcef06e
 
             System.err.println("Rapaz cabô a thread");
         }

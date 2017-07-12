@@ -26,7 +26,6 @@ public class Controller {
 		con.enviar("ARP@");
 		// con.temGente();
 
-
 		con = new Conexao(rel);
 		con.start();                
 		//System.err.println("Quem ta ai?");
@@ -55,5 +54,6 @@ public class Controller {
 		rel.setHora(aux);
 		rel.refresh();
 	}
+
 }
 
