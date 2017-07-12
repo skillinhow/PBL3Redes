@@ -1,193 +1,177 @@
-package view;
+package util;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 
-import util.Conexao;
-import util.Relogio;
+public class Relogio extends Thread implements Comparable<String> {
 
-import javax.swing.JButton;
-import java.awt.Font;
-import javax.swing.SwingConstants;
+	private int hora, min, seg;
+	private JLabel lbl;
+	private long millis;
+	private String rel;
 
-import controller.Controller;
+	public Relogio(JLabel label) {
+		hora = 0;
+		min = 0;
+		seg = 0;
+		lbl = label;
+		millis = 1000;
+		rel = hora + ":" + min + ":" + seg;
+		lbl.setText(rel);
+	}
 
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
+	@Override
+	public void run() {
+		while (true) {
+			try {
+				seg += 1;
+				Thread.sleep(millis);
+				rel = hora + ":" + min + ":" + seg;
+				lbl.setText(rel);
+				
+				if (seg > 59) {
+                                        seg = 0;
+					min += 1;					
+					rel = hora + ":" + min + ":" + seg;
+					lbl.setText(rel);
+                                        if(min > 59){
+                                        hora += 1;
+					min = 0;
+					rel = hora + ":" + min + ":" + seg;
+					lbl.setText(rel);
+                                        if(hora>23)
+                                            hora = 0;
+					rel = hora + ":" + min + ":" + seg;
+					lbl.setText(rel);
+                                        }
+                                        
+				} 
 
-public class Tela {
+			} catch (InterruptedException e) {
+				System.out.println("Erro no delay do contador");
+			}
+		}
+	}
 
-	private JFrame frame;
-	private JTextField hr, min, seg, drift;
-	private Relogio rel;
-	private Conexao con;
-	private Controller control;
+	public void setHora(int hora) {
+		this.hora = hora;
+	}
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Tela window = new Tela();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
+	public void setMin(int min) {
+		this.min = min;
+	}
+
+	public void setSeg(int seg) {
+		this.seg = seg;
+	}
+
+	public void setMillis(long millis) {
+		this.millis += millis;
+	}
+
+	public long getDrift() {
+		return millis;
+	}
+
+	public void refresh() {
+		rel = hora + ":" + min + ":" + seg;
+		lbl.setText(rel);
+	}
+
+	public String getHora() {
+		return hora + ":" + min + ":" + seg;
+
+	}
+
+	public boolean comparaHora(String hora) {
+		String[] hrec = hora.split(":");
+		if (Integer.parseInt(hrec[2]) < seg) {
+			if (Integer.parseInt(hrec[1]) < min) {
+				if (Integer.parseInt(hrec[0]) < this.hora) {
+					return false;
 				}
 			}
-		});
-	}
-
-	/**
-	 * Create the application.
-	 */
-	public Tela() {
-		initialize();
-	}
-
-	/**
-	 * Initialize the contents of the frame.
-	 */
-	private void initialize() {
-		
-		
-
-		frame = new JFrame();
-		frame.setBounds(100, 100, 489, 253);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.getContentPane().setLayout(null);
-
-		JLabel relogio = new JLabel("New label");
-		relogio.setHorizontalAlignment(SwingConstants.CENTER);
-		relogio.setFont(new Font("Tahoma", Font.PLAIN, 62));
-		relogio.setBounds(67, 24, 366, 75);
-		frame.getContentPane().add(relogio);
-		control = new Controller(relogio);
-
-		hr = new JTextField();
-		hr.setBounds(53, 110, 89, 20);
-		frame.getContentPane().add(hr);
-		hr.setColumns(10);
-
-		min = new JTextField();
-		min.setBounds(211, 110, 89, 20);
-		frame.getContentPane().add(min);
-		min.setColumns(10);
-
-		seg = new JTextField();
-		seg.setBounds(380, 110, 86, 20);
-		frame.getContentPane().add(seg);
-		seg.setColumns(10);
-
-		ButtonHandller btmH = new ButtonHandller();
-
-		JButton btnStart = new JButton("Start");
-		btnStart.addActionListener(btmH);
-		btnStart.setBounds(267, 183, 89, 23);
-		frame.getContentPane().add(btnStart);
-
-		JLabel lblHora = new JLabel("Hora - ");
-		lblHora.setBounds(10, 113, 46, 14);
-		frame.getContentPane().add(lblHora);
-
-		JLabel lblMinuto = new JLabel("Minuto - ");
-		lblMinuto.setBounds(152, 113, 52, 14);
-		frame.getContentPane().add(lblMinuto);
-
-		JLabel lblSegundo = new JLabel("Segundo - ");
-		lblSegundo.setBounds(310, 113, 60, 14);
-		frame.getContentPane().add(lblSegundo);
-
-		drift = new JTextField();
-		drift.setBounds(53, 184, 86, 20);
-		frame.getContentPane().add(drift);
-		drift.setColumns(10);
-
-		JLabel lblDtift = new JLabel("Dtift -");
-		lblDtift.setBounds(10, 187, 46, 14);
-		frame.getContentPane().add(lblDtift);
-
-		JButton btnSetDrift = new JButton("Set Drift");
-		btnSetDrift.addActionListener(btmH);
-		btnSetDrift.setBounds(152, 183, 89, 23);
-		frame.getContentPane().add(btnSetDrift);
-
-		JButton btnSetHora = new JButton("Set Hora");
-		btnSetHora.addActionListener(btmH);
-		btnSetHora.setBounds(53, 133, 89, 23);
-		frame.getContentPane().add(btnSetHora);
-
-		JButton btnSetMinuto = new JButton("Set Min");
-		btnSetMinuto.addActionListener(btmH);
-		btnSetMinuto.setBounds(211, 133, 89, 23);
-		frame.getContentPane().add(btnSetMinuto);
-
-		JButton btnSetSegundo = new JButton("Set Seg");
-		btnSetSegundo.addActionListener(btmH);
-		btnSetSegundo.setBounds(377, 133, 89, 23);
-		frame.getContentPane().add(btnSetSegundo);
-		
-		JButton btnConectar = new JButton("Conectar");
-		btnConectar.addActionListener(btmH);
-		btnConectar.setBounds(377, 183, 89, 23);
-		frame.getContentPane().add(btnConectar);
-	}
-
-	private class ButtonHandller implements ActionListener {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if ("Start".equals(e.getActionCommand())) {
-				control.start();
-			} else if ("Set Drift".equals(e.getActionCommand())) {
-				if ("".equals(drift.getText())) {
-					JOptionPane.showMessageDialog(null, "Insira um valor de Drift!!");
-				} else {
-					long aux = Integer.parseInt(drift.getText())*1000;
-					control.setDrift(aux);				
-				}
-			} else if ("Set Hora".equals(e.getActionCommand())) {
-				if ("".equals(hr.getText())){
-					JOptionPane.showMessageDialog(null, "Insira um valor da Hora!!");
-				} else {
-					int aux = Integer.parseInt(hr.getText());
-					control.setHr(aux);
-				}
-			} else if ("Set Min".equals(e.getActionCommand())) {
-				if ("".equals(min.getText())) {
-					JOptionPane.showMessageDialog(null, "Insira um valor de Minutos!!");
-				} else {
-					int aux = Integer.parseInt(min.getText());
-					control.setMin(aux);
-				}
-
-			} else if ("Set Seg".equals(e.getActionCommand())) {
-				if ("".equals(seg.getText())) {
-					JOptionPane.showMessageDialog(null, "Insira um valor de Segundos!!");
-				} else {
-					int aux = Integer.parseInt(seg.getText());
-					control.setSeg(aux);
-				}
-			}else if ("Conectar".equals(e.getActionCommand())) {
-				try {
-					control.conectar();
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					System.out.println("Erro no envio");
-				}
-			}
-
 		}
 
+		return true;
 	}
 
-	private void main() {
-		// TODO Auto-generated method stub
-		Tela t = new Tela();
+	@Override
+	public int compareTo(String arg0) {
+		String[] aux = arg0.split(":");
+		// System.out.println("Hora atual - " + hora + ":" + min + ":" + seg);
+
+		// Caso a hora passada por argumento seja maior que a minha
+		if (Integer.parseInt(aux[0]) == hora) {
+			if (Integer.parseInt(aux[1]) == min) {
+				if (Integer.parseInt(aux[2]) > seg) {
+					return -1;
+				}
+			} else if (Integer.parseInt(aux[1]) > min) {
+				return -1;
+			}
+		} else if (Integer.parseInt(aux[0]) > hora) {
+			return -1;
+		}
+
+		// Caso a hora passada por argumento seja igual a minha
+		if (Integer.parseInt(aux[0]) == hora && Integer.parseInt(aux[1]) == min && Integer.parseInt(aux[2]) == seg) {
+			return 0;
+		}
+
+		// Caso a hora passada por argumento seja menor que a minha
+		if (Integer.parseInt(aux[0]) == hora) {
+			if (Integer.parseInt(aux[1]) == min) {
+				if (Integer.parseInt(aux[2]) < seg) {
+					return 1;
+				}
+			} else if (Integer.parseInt(aux[1]) < min) {
+				return 1;
+			}
+		} else if (Integer.parseInt(aux[0]) < hora) {
+			return 1;
+		}
+
+		return 2;
+
 	}
+
+	public int compareTo2(String arg0) {
+
+		String[] aux = arg0.split(":");
+		System.out.println("Hora atual - " + hora + ":" + min + ":" + seg);
+
+		// Caso a hora passada por argumento seja maior que a minha
+		if (Integer.parseInt(aux[0]) == hora) {
+			if (Integer.parseInt(aux[1]) == min) {
+				if (Integer.parseInt(aux[2]) > seg) {
+					return -1;
+				}
+			} else if (Integer.parseInt(aux[1]) > min) {
+				return -1;
+			}
+		} else if (Integer.parseInt(aux[0]) > hora) {
+			return -1;
+		}
+
+		// Caso a hora passada por argumento seja igual a minha.
+		if (Integer.parseInt(aux[0]) == hora && Integer.parseInt(aux[1]) == min && Integer.parseInt(aux[2]) == seg) {
+			return 0;
+		}
+
+		// Caso a hora passada por argumento seja menor que a minha
+		if (Integer.parseInt(aux[0]) == hora) {
+			if (Integer.parseInt(aux[1]) == min) {
+				if (Integer.parseInt(aux[2]) < seg) {
+					return 1;
+				}
+			} else if (Integer.parseInt(aux[1]) < min) {
+				return 1;
+			}
+		} else if (Integer.parseInt(aux[0]) < hora) {
+			return 1;
+		}
+
+		return 2;
+	}
+
 }

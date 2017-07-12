@@ -33,29 +33,6 @@ public class Relogio extends Thread implements Comparable<String> {
 					min += 1;					
 					rel = hora + ":" + min + ":" + seg;
 					lbl.setText(rel);
-<<<<<<< HEAD
-<<<<<<< HEAD
-				}
-				if (min > 59) {
-					hora += 1;
-					min = 0;
-					rel = hora + ":" + min + ":" + seg;
-					lbl.setText(rel);
-				}
-				if (hora > 23) {
-					hora = 0;
-=======
-                                        if(min > 59){
-                                        hora += 1;
-					min = 0;
-					rel = hora + ":" + min + ":" + seg;
-					lbl.setText(rel);
-                                        if(hora>23)
-                                            hora = 0;
->>>>>>> 095e63bcc36b2263398c737fefd7043f9349c90a
-					rel = hora + ":" + min + ":" + seg;
-					lbl.setText(rel);
-=======
                                         if(min > 59){
                                         hora += 1;
 					min = 0;
@@ -65,7 +42,6 @@ public class Relogio extends Thread implements Comparable<String> {
                                             hora = 0;
 					rel = hora + ":" + min + ":" + seg;
 					lbl.setText(rel);
->>>>>>> 5592ecd153ec69017de20e75dcae93950bcef06e
                                         }
                                         
 				} 

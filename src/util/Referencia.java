@@ -15,18 +15,8 @@ public class Referencia extends Thread {
 
 	public Referencia(Relogio relo) {
 		this.rel = relo;
-<<<<<<< HEAD
-<<<<<<< HEAD
-		grupo = "230.0.0.1";
-		porta = 20141;
-=======
 		grupo = "230.0.0.11";
 		porta = 20142;
->>>>>>> 095e63bcc36b2263398c737fefd7043f9349c90a
-=======
-		grupo = "230.0.0.11";
-		porta = 20142;
->>>>>>> 5592ecd153ec69017de20e75dcae93950bcef06e
 		try {
 			rf = new MulticastSocket(porta);
 			rf.joinGroup(InetAddress.getByName(grupo));
@@ -62,8 +52,6 @@ public class Referencia extends Thread {
                        
 		}
 	}
-	
-
 
 	@Override
 	public void run() {
