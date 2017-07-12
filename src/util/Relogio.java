@@ -153,7 +153,7 @@ public class Relogio extends Thread implements Comparable<String> {
 			return -1;
 		}
 
-		// Caso a hora passada por argumento seja igual a minha
+		// Caso a hora passada por argumento seja igual a minha.
 		if (Integer.parseInt(aux[0]) == hora && Integer.parseInt(aux[1]) == min && Integer.parseInt(aux[2]) == seg) {
 			return 0;
 		}
