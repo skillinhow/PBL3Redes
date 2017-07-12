@@ -27,22 +27,25 @@ public class Relogio extends Thread implements Comparable<String> {
 				Thread.sleep(millis);
 				rel = hora + ":" + min + ":" + seg;
 				lbl.setText(rel);
-				// System.out.println("Drift na contagem - "+ millis);
+				
 				if (seg > 59) {
-					min += 1;
-					seg = 0;
+                                        seg = 0;
+					min += 1;					
 					rel = hora + ":" + min + ":" + seg;
 					lbl.setText(rel);
-				} else if (min > 59) {
-					hora += 1;
+                                        if(min > 59){
+                                        hora += 1;
 					min = 0;
 					rel = hora + ":" + min + ":" + seg;
 					lbl.setText(rel);
-				} else if (hora > 23) {
-					hora = 0;
+                                        if(hora>23)
+                                            hora = 0;
 					rel = hora + ":" + min + ":" + seg;
 					lbl.setText(rel);
-				}
+                                        }
+                                        
+				} 
+
 			} catch (InterruptedException e) {
 				System.out.println("Erro no delay do contador");
 			}
@@ -95,7 +98,7 @@ public class Relogio extends Thread implements Comparable<String> {
 	@Override
 	public int compareTo(String arg0) {
 		String[] aux = arg0.split(":");
-//		System.out.println("Hora atual - " + hora + ":" + min + ":" + seg);
+		// System.out.println("Hora atual - " + hora + ":" + min + ":" + seg);
 
 		// Caso a hora passada por argumento seja maior que a minha
 		if (Integer.parseInt(aux[0]) == hora) {
