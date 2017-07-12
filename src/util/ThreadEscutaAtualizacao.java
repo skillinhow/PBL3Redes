@@ -5,7 +5,6 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
-import javax.xml.bind.annotation.XmlInlineBinaryData;
 
 public class ThreadEscutaAtualizacao extends Thread {
 
